@@ -38,12 +38,15 @@ aisle width, block sizes, eye heights, and which seats are already sold. Change 
 
 ## Real venue captures
 
-Each seat has a `panorama` field, empty by default. Set it to an equirectangular (2:1) image URL and
+Each seat has a `panorama` field, empty by default. Set it to an equirectangular (2:1) image path and
 that seat's view becomes the photo instead of the rendered room:
 
 ```js
-panorama: '/panoramas/e5-seated.jpg',
+panorama: 'panoramas/e5-seated.jpg',
 ```
+
+The path resolves against the app URL, so keep it relative (a leading `/` points at the host root
+and will 404 under the `/seatview-poc/` Pages prefix).
 
 Be clear about the trade-off before doing this at scale. A 360 still is captured from one point, so
 standing up inside it slides the camera vertically without real parallax; a truthful standing view

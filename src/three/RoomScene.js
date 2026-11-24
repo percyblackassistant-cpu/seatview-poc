@@ -332,7 +332,7 @@ export default class RoomScene {
       return
     }
     new THREE.TextureLoader().load(
-      seat.panorama,
+      new URL(seat.panorama, document.baseURI).href,
       (tex) => {
         tex.mapping = THREE.EquirectangularReflectionMapping
         tex.colorSpace = THREE.SRGBColorSpace
