@@ -1,54 +1,80 @@
-import { ROOM, ROW_LABELS, ROOM_BACK_Z, ROOM_FRONT_Z } from '../data/room.js'
+const PAD = 0.6
 
-const PAD = 0.55
-const VIEW_X = -ROOM.width / 2 - PAD
-const VIEW_Y = ROOM_FRONT_Z - PAD
-const VIEW_W = ROOM.width + PAD * 2
-const VIEW_H = ROOM_BACK_Z - ROOM_FRONT_Z + PAD * 2
+export default function SeatMap({ venue, tier, selectedId, onSelect }) {
+  const seats = venue.seats.filter((seat) => seat.tier === tier.id)
+  const { hall, screen } = venue
+  const stageFront = hall.frontZ + hall.stageDepth
+  const lastRowZ = tier.firstZ + (tier.rows - 1) * tier.rowPitch
 
-const STAGE_MID = ROOM.stage.zFront - ROOM.stage.depth / 2
+  const minX = -hall.width / 2 - PAD
+  const minZ = hall.frontZ - PAD
+  const width = hall.width + PAD * 2
+  const height = Math.max(lastRowZ + 0.9, stageFront + 1) - minZ
 
-export default function SeatMap({ seats, selectedId, onSelect }) {
   const pick = (seat) => {
     if (seat.status === 'sold') return
     onSelect(seat.id)
   }
 
+  const raised = (tier.elevation ?? 0) > 0
+  const rows = Array.from(new Set(seats.map((seat) => seat.row)))
+
   return (
     <svg
       className="seatmap"
-      viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`}
+      viewBox={`${minX} ${minZ} ${width} ${height}`}
       role="group"
-      aria-label={`Seating plan for ${ROOM.name}`}
+      aria-label={`${tier.label} seating plan for ${venue.name}`}
     >
       <rect
         className="room-floor"
-        x={-ROOM.width / 2}
-        y={ROOM_FRONT_Z}
-        width={ROOM.width}
-        height={ROOM_BACK_Z - ROOM_FRONT_Z}
-        rx={0.12}
+        x={-hall.width / 2}
+        y={hall.frontZ}
+        width={hall.width}
+        height={hall.depth}
+        rx={0.15}
       />
+
       <rect
         className="stage"
-        x={-ROOM.stage.width / 2}
-        y={ROOM.stage.zFront - ROOM.stage.depth}
-        width={ROOM.stage.width}
-        height={ROOM.stage.depth}
+        x={-hall.stageWidth / 2}
+        y={hall.frontZ}
+        width={hall.stageWidth}
+        height={hall.stageDepth}
         rx={0.08}
       />
-      <text className="stage-label" x={0} y={STAGE_MID - 0.02} textAnchor="middle">
+      <rect
+        className="screen"
+        x={-screen.width / 2}
+        y={screen.z - 0.16}
+        width={screen.width}
+        height={0.32}
+        rx={0.06}
+      />
+      <text className="stage-label" x={0} y={hall.frontZ + hall.stageDepth / 2 - 0.1} textAnchor="middle">
         STAGE
       </text>
-      <text className="stage-sub" x={0} y={STAGE_MID + 0.34} textAnchor="middle">
-        screen this way
+      <text className="stage-sub" x={0} y={hall.frontZ + hall.stageDepth / 2 + 0.4} textAnchor="middle">
+        screen {screen.width} × {screen.height} m
       </text>
 
-      {ROW_LABELS.slice(0, ROOM.rowCount).map((label, r) => {
-        const z = ROOM.firstRowZ + r * ROOM.rowPitch
+      {raised ? (
+        <text className="ghost-note" x={0} y={(stageFront + tier.firstZ) / 2} textAnchor="middle">
+          stalls below, rows A to O
+        </text>
+      ) : null}
+
+      {rows.map((row) => {
+        const seat = seats.find((s) => s.row === row)
         return (
-          <text key={label} className="row-label" x={-ROOM.width / 2 + 0.42} y={z + 0.11} textAnchor="middle">
-            {label}
+          <text
+            key={row}
+            className="row-label"
+            x={-hall.width / 2 + 0.55}
+            y={seat.z + 0.11}
+            textAnchor="middle"
+          >
+            {row}
           </text>
         )
       })}
@@ -61,7 +87,7 @@ export default function SeatMap({ seats, selectedId, onSelect }) {
             className={`seat seat--${state}`}
             role="button"
             tabIndex={seat.status === 'sold' ? -1 : 0}
-            aria-label={`Row ${seat.row}, seat ${seat.number}${seat.status === 'sold' ? ', taken' : ''}`}
+            aria-label={`${tier.label}, row ${seat.row}, seat ${seat.number}${seat.status === 'sold' ? ', taken' : ''}`}
             aria-pressed={seat.id === selectedId}
             onClick={() => pick(seat)}
             onKeyDown={(e) => {
@@ -72,7 +98,7 @@ export default function SeatMap({ seats, selectedId, onSelect }) {
             }}
           >
             <rect x={seat.x - 0.23} y={seat.z - 0.18} width={0.46} height={0.36} rx={0.07} />
-            <title>{`Row ${seat.row} · seat ${seat.number}${seat.status === 'sold' ? ' (taken)' : ''}`}</title>
+            <title>{`${tier.label} · row ${seat.row} · seat ${seat.number}${seat.status === 'sold' ? ' (taken)' : ''}`}</title>
           </g>
         )
       })}

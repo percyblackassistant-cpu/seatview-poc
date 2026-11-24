@@ -93,7 +93,7 @@ h1 {
 
 .layout {
   display: grid;
-  grid-template-columns: 372px minmax(0, 1fr);
+  grid-template-columns: minmax(360px, 424px) minmax(0, 1fr);
   gap: 18px;
 }
 
@@ -126,9 +126,68 @@ h1 {
   font-size: 12px;
 }
 
+.title-block {
+  min-width: 0;
+}
+
+.venue-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.chip {
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.chip:hover {
+  color: var(--ink);
+  border-color: #3a3f45;
+}
+
+.chip--on {
+  background: rgba(230, 178, 74, 0.12);
+  border-color: rgba(230, 178, 74, 0.5);
+  color: var(--accent);
+}
+
+.tier-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tier-note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #7f858b;
+}
+
+.ghost-note {
+  fill: #5f5b55;
+  font-size: 0.7px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.screen {
+  fill: #1b2434;
+  stroke: rgba(230, 185, 104, 0.5);
+  stroke-width: 0.04;
+}
+
 .map-frame {
   display: flex;
   justify-content: center;
+  overflow-x: auto;
 }
 
 .seatmap {
@@ -360,6 +419,7 @@ h1 {
     max-height: 54vh;
     width: auto;
     max-width: 100%;
+    min-width: 520px;
   }
 
   .view-frame {
