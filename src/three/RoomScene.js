@@ -278,6 +278,7 @@ export default class RoomScene {
     }
 
     if (palette.chandelier) {
+      const hangY = hall.height - 1.7
       const chandelier = new THREE.Group()
       const gold = new THREE.MeshStandardMaterial({
         color: palette.chandelier,
@@ -287,7 +288,7 @@ export default class RoomScene {
         metalness: 0.7,
       })
       chandelier.add(new THREE.Mesh(new THREE.SphereGeometry(0.55, 24, 16), gold))
-      const stemHeight = Math.max(0.4, hall.height - (hall.height - 3.9) - 0.55)
+      const stemHeight = Math.max(0.4, hall.height - hangY - 0.55)
       const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, stemHeight, 8), gold)
       stem.position.set(0, 0.55 + stemHeight / 2, 0)
       chandelier.add(stem)
@@ -300,7 +301,7 @@ export default class RoomScene {
         bulb.position.set(Math.cos(a) * 1.05, 0.16, Math.sin(a) * 1.05)
         chandelier.add(bulb)
       }
-      chandelier.position.set(0, hall.height - 3.9, hall.frontZ + hall.depth * 0.42)
+      chandelier.position.set(0, hangY, hall.frontZ + hall.depth * 0.42)
       this.root.add(chandelier)
     }
   }
